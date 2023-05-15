@@ -196,3 +196,108 @@ def check_error(input_list):
 
 
 check_error(input_list)
+if error == 0:
+    binarycode=''
+    for i in input_list:
+        oprtins=i[0]
+        if oprtins=="mov":  # for move 
+            if i[2][0]=="$":
+                oprtins="mov1"
+            else:
+                oprtins="mov2"
+        if oprtins=="var":
+            continue
+        else:
+            newstmtyp=stmtypes[oprtins]
+        # f2.write(newstmtyp,oprtins)
+
+        #TYPE A
+        if newstmtyp=="A":
+            register_1_name = i[1]
+            register_2_name = i[2]
+            register_3_name = i[3]
+            if i[0]== "add":
+                binarycode += "0000000"
+            elif i[0]== "sub":
+                binarycode += "0000100"
+            elif i[0]== "mul":
+                binarycode += "0011000"
+            elif i[0]== "xor":
+                binarycode += "0101000"
+            elif i[0]== "or":
+                binarycode += "0101100"
+            elif i[0]== "and":
+                binarycode += "0110000"
+            if register_1_name in register:
+                binarycode += register[register_1_name]
+            if register_2_name in register:
+                binarycode += register[register_2_name]
+            if register_1_name in register:
+                binarycode += register[register_3_name]
+            f2.write(binarycode+"\n")
+            
+            binarycode=''
+        #TYPE B
+        if newstmtyp=="B":
+            register_1_name = i[1]
+            if oprtins == "mov1":
+                binarycode += "000100"
+            elif i[0]== "rs":
+                binarycode += "010000"
+            elif i[0]== "ls":
+                binarycode += "010010"
+            if register_1_name in register:
+                binarycode += register[register_1_name]
+            binary_imm = str(bin(int(i[2][1:]))[2:])
+            binarycode+="0"*(7-len(binary_imm))+binary_imm
+            f2.write(binarycode + "\n")
+            binarycode=''
+        # imm value
+
+        #TYPE C
+        if newstmtyp=="C":
+            register_1_name = i[1]
+            register_2_name = i[2]
+            if oprtins == "mov2":
+                binarycode += "0001100000"
+            elif i[0]== "div":
+                binarycode += "0011100000"
+            elif i[0]== "not":
+                binarycode += "0110100000"
+            elif i[0]== "cmp":
+                binarycode += "0111000000"    
+            if register_1_name in register:
+                binarycode += register[register_1_name]
+            if register_2_name in register:
+                binarycode += register[register_2_name]
+            f2.write(binarycode +"\n")
+            binarycode=''
+        #TYPE D
+        if newstmtyp=="D":
+            register_1_name = i[1]
+            if i[0] == "ld":
+                binarycode += "001000"
+            elif i[0]== "st":
+                binarycode += "001010"
+            if register_1_name in register:
+                binarycode += register[register_1_name]
+            binarycode+= var_value[(variables.index(i[2]))]
+            f2.write(binarycode +"\n")
+            binarycode=''
+        #TYPE E
+        if newstmtyp == 'E':
+            if i[0] == "jmp":
+                binarycode += "011110000"
+            elif i[0]== "jlt":
+                binarycode += "111000000"
+            elif i[0]== "jgt":
+                binarycode += "111010000"
+            elif i[0]== "je":
+                binarycode += "111110000"
+            binarycode+= labels_val[(labels.index(i[1]))]
+            f2.write(binarycode +"\n")
+            binarycode=''
+        #TYPE F
+        if newstmtyp=='F':
+            binarycode+="1101000000000000"
+            f2.write(binarycode+"\n")
