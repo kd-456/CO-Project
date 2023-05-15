@@ -72,6 +72,60 @@ for i in input_list:
         bincounter=bin(counter)[2:]# removing 0b and bin for conversion 
         # f2.write(bincounter)
         labels_val.append("{0:07b}".format(len(labels)))
+        # f2.write(labels_val)
+       
+#     #CHECKING FOR OVERFLOW IN ADD    
+    if i[0]=='add' and len(i)==4:
+        register1[i[1]]=register1[i[2]]+register1[i[3]]
+        if len(bin(register1[i[1]])[2:])>len(bin(register1[i[2]])[2:]) or len(bin(register1[i[1]])[2:]) > len (bin(register1[i[3]])[2:]):
+            flags['V']=1
+            register1[i[1]]=0
+
+    #CHECKING FOR OVERFLOW IN SUBTRACT
+    elif i[0]=='sub' and len(i)==4:
+        register1[i[1]]=register1[i[2]]-register1[i[3]]
+        if bin(register1[i[2]])[2:]<bin(register1[i[3]])[2:]:
+            flags['V']=1
+            register1[i[1]]=0
+
+#CHECKING FOR OVERFLOW IN MULTIPLY
+    elif i[0]=='mul' and len(i)==4:
+        register1[i[1]]=register1[i[2]]-register1[i[3]]
+        if len(bin(register1[i[1]])[2:])>len(bin(register1[i[2]])[2:]) or len(bin(register1[i[1]])[2:]) > len (bin(register1[i[3]])[2:]):
+            flags['V']=1
+            register1[i[1]]=0
+
+#CHECKING FOR OVERFLOW IN DIVISION
+    elif i[0]=='div' and len(i)==3:
+        if register1[i[2]]==0:
+            register1['R0']=0
+        else:
+            register1['R0']=int(register1[i[1]]/register1[i[2]])
+            register1["R1"]=register1[i[1]]%register1[i[2]]
+            if register1[i[2]]==0:
+                flags['V']=1
+                register1["R0"]=0
+                register1["R1"]=0
+
+#   CHECKING FOR COMPARE FUNCTION     
+    elif i[0]=='cmp' and len(i)==3:
+        if register1[i[1]]<register1[i[2]]:
+            flags['L']=1
+
+        elif register1[i[1]]>register1[i[2]]:
+            flags['G']=1
+
+        elif register1[i[1]]<register1[i[2]]:
+            flags['E']=1
+copy_list=input_list.copy()
+for i in input_list:
+    if i[0][:-1] in labels:
+        i.remove(i[0])
+        
+# print(labels)
+print(input_list)
+# f2.write(labels_val)
+# f2.write(var_value)        
 error=0
 def check_error(input_list):
     global error
